@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router";
-function Add({stateContact,  contact, handleClose}) {
+import { toast } from "react-toastify";
+function Add({ stateContact, contact, handleClose }) {
   const navigate = useNavigate();
   const [newContact, SetNewContact] = useState({});
   const handelChange = (e) => {
@@ -13,27 +14,32 @@ function Add({stateContact,  contact, handleClose}) {
   const handelClick = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3002/addUser", newContact);
+     const userAdded = await axios.post("http://localhost:3002/addUser", newContact);
       navigate("/");
+      userAdded.status === 200
+      ? toast("user Added")
+      : toast.error("can not add user");
     } catch (error) {
       console.log(error);
+      toast.error("can not load the add user");
     }
-
   };
-  
+
   const handelSave = async (e) => {
     e.preventDefault();
     try {
-     await axios.put(
+      const userEdited = await axios.put(
         `http://localhost:3002/updateUser/${contact._id}`,
         newContact
       );
-      handleClose()
-      
+      handleClose();
+      userEdited.status === 200
+        ? toast("user Edited")
+        : toast.error("can not edit user");
     } catch (error) {
       console.log(error);
+      toast.error("can not load the edit user");
     }
-    
   };
   return (
     <Form className="container">
@@ -43,7 +49,9 @@ function Add({stateContact,  contact, handleClose}) {
           type="text"
           name="lastName"
           onChange={handelChange}
-          placeholder = {stateContact === "edit" ? contact.lastName :"Enter your Last Name"}
+          placeholder={
+            stateContact === "edit" ? contact.lastName : "Enter your Last Name"
+          }
         />
       </Form.Group>
 
@@ -52,7 +60,11 @@ function Add({stateContact,  contact, handleClose}) {
         <Form.Control
           type="text"
           name="firstName"
-          placeholder = {stateContact === "edit" ? contact.firstName :"Enter your First Name"}
+          placeholder={
+            stateContact === "edit"
+              ? contact.firstName
+              : "Enter your First Name"
+          }
           onChange={handelChange}
         />
       </Form.Group>
@@ -62,7 +74,7 @@ function Add({stateContact,  contact, handleClose}) {
         <Form.Control
           type="email"
           name="email"
-          placeholder = {stateContact === "edit" ? contact.email :"Enter email"}
+          placeholder={stateContact === "edit" ? contact.email : "Enter email"}
           onChange={handelChange}
         />
         <Form.Text className="text-muted">
@@ -74,7 +86,7 @@ function Add({stateContact,  contact, handleClose}) {
         <Form.Label>Age</Form.Label>
         <Form.Control
           type="text"
-          placeholder = {stateContact === "edit" ? contact.age :"Enter your Age"}
+          placeholder={stateContact === "edit" ? contact.age : "Enter your Age"}
           onChange={handelChange}
           name="age"
         />
@@ -83,9 +95,11 @@ function Add({stateContact,  contact, handleClose}) {
         <Button variant="primary" type="submit" onClick={handelClick}>
           Add
         </Button>
-      ):<Button variant="primary" onClick={handelSave}>
-      Save Changes
-    </Button>}
+      ) : (
+        <Button variant="primary" onClick={handelSave}>
+          Save Changes
+        </Button>
+      )}
     </Form>
   );
 }

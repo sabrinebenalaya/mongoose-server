@@ -3,12 +3,17 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Add from "../Page/Add";
+import { toast } from "react-toastify";
+
 function Contact({ key, contact }) {
   const deleteContact = async (id) => {
     try{
+      const contactDeleted =
     await axios.delete(`http://localhost:3002/deleteUser/${id}`);
+    contactDeleted.status ===200? toast("user deleted"):  toast.error("can not delete user")
   } catch (error) {
     console.log(error);
+    toast.error("can not load the delete user")
   }
   };
 
@@ -36,7 +41,7 @@ function Contact({ key, contact }) {
           </p>
           <p>
             <Button
-              variant="primary"
+              variant="danger"
               type="submit"
               onClick={() => handelClickDelete(contact._id)}
             >
